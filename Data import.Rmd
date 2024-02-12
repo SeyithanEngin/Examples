@@ -1,0 +1,218 @@
+-Data improt-
+ 
+```{r}
+read_csv("a,b,c
+1,2,3
+4,5,6")
+```
+
+Sometimes there are a few lines of metadata at the top of the file. You can use skip = n to skip the first n lines; or use comment = "#" to drop all lines that start with (e.g.) #.  
+
+
+```{r}
+read_csv("The first line of metadata
+  The second line of metadata
+  x,y,z
+  1,2,3", skip = 2)
+```
+ 
+   
+```{r}
+read_csv("# A comment I want to skip
+  x,y,z
+  1,2,3", comment = "#")
+```
+   
+  he data might not have column names. You can use col_names = FALSE to tell read_csv() not to treat the first row as headings, and instead label them sequentially from X1 to Xn:
+  
+```{r}
+read_csv("1,2,3\n4,5,6", col_names = FALSE)
+```
+
+ Alternatively you can pass col_names a character vector which will be used as the column names: 
+ 
+ 
+```{r}
+read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
+```
+ 
+     Another option that commonly needs tweaking is na: this specifies the value (or values) that are used to represent missing values in your file:
+     
+ 
+```{r}
+read_csv("a,b,c\n1,2,.", na = ".")
+```
+ 
+ This is all you need to know to read ~75% of CSV files that you’ll encounter in practice. You can also easily adapt what you’ve learned to read tab separated files with
+ 
+ 
+ read_tsv() and fixed width files with read_fwf(). To read in more challenging files, you’ll need to learn more about how readr parses each column, turning them into R vectors.
+    
+    
+    
+    
+ 
+```{r}
+str(parse_logical(c("TRUE", "FALSE", "NA")))
+```
+ 
+```{r}
+str(parse_integer(c("1", "2", "3")))
+```
+
+ 
+```{r}
+str(parse_date(c("2010-01-01", "1979-10-14")))
+```
+ 
+ 
+```{r}
+parse_integer(c("1", "231", ".", "456"), na = ".")
+```
+ 
+    
+    
+```{r}
+x <- parse_integer(c("123", "345", "abc", "123.45"))
+```
+    
+```{r}
+x
+```
+    
+```{r}
+problems(x)
+```
+    
+  
+```{r}
+parse_number("$123,456,789")
+```
+  
+  
+```{r}
+parse_number("123.456.789", locale = locale(grouping_mark = "."))
+```
+  
+  
+```{r}
+parse_number("123'456'789", locale = locale(grouping_mark = "'"))
+```
+  
+  
+```{r}
+charToRaw("Hadley")
+```
+  
+  
+```{r}
+x1 <- "El Ni\xf1o was particularly bad this year"
+
+parse_character(x1, locale = locale(encoding = "Latin1"))
+
+parse_character(x2, locale = locale(encoding = "Shift-JIS"))
+```
+
+  
+```{r}
+x2 <- "\x82\xb1\x82\xf1\x82\xc9\x82\xbf\x82\xcd"
+ parse_character(x2, locale = locale(encoding = "Shift-JIS"))
+```
+  
+  
+  
+  
+```{r}
+guess_encoding(charToRaw(x1))
+```
+  
+  
+```{r}
+guess_encoding(charToRaw(x2))
+```
+
+```{r}
+fruit <- c("apple", "banana")
+parse_factor(c("apple", "banana", "bananana"), levels = fruit)
+```
+  
+
+
+
+
+```{r}
+parse_datetime("2010-10-01T2010")
+```
+
+
+```{r}
+library(hms)
+```
+
+```{r}
+parse_time("01:10 am")
+```
+
+
+
+-Problems- 
+
+
+```{r}
+challenge <- read_csv(readr_example("challenge.csv"))
+```
+
+```{r}
+problems(challenge)
+```
+
+```{r}
+tail(challenge)
+```
+
+```{r}
+challenge <- read_csv(
+  readr_example("challenge.csv"), 
+  col_types = cols(
+    x = col_double(),
+    y = col_logical()
+  )
+)
+```
+Then you can fix the type of the y column by specifying that y is a date column:
+
+
+
+```{r}
+challenge <- read_csv(
+  readr_example("challenge.csv"), 
+  col_types = cols(
+    x = col_double(),
+    y = col_date()
+  )
+)
+tail(challenge)
+```
+  
+
+
+```{r}
+challenge2 <- read_csv(readr_example("challenge.csv"), guess_max = 1001)
+```
+
+
+```{r}
+challenge2
+```
+
+
+
+
+
+
+
+
+
+
+
+
